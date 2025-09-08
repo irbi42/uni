@@ -9,18 +9,50 @@ function analyzeUser(user) {
     return result;
 }
 
+function createValidator (rules) {
+    return function validate(data) {
+        let err = "";
+        let isValid = true;
+        for (const [field, expectedType] of Object.entries(rules)) {
+            const val = data[field];
+            let actualType;
+
+            if (Array.isArray(val)) {
+                actualType = 'array';
+            } else {
+                actualType = typeof(val);
+            };
+
+            if (actualType != expectedType) {
+                isValid = false;
+                err += 'Поле [' + field + '] должно быть [' + expectedType + '] ';
+            };
+        };
+        if(isValid){
+            return "valid: true"
+        }
+        return "valid: false, errors: " + err;
+    };
+}
+
+
+const rules = {name: 'string', age: 'number', isAdmin: 'boolean', hobbies: 'array'};
+const validate = createValidator(rules);
+
 const user = {
     name: "Tom",
     age: 12,
     isAdmin: false,
     hobbies: ["Видеоигры", "Рисование"]
 };
+console.log(analyzeUser(user));
 
 const admin = {
-    name: "Bob",
-    age: 22,
+    name: 1,
+    age: "22",
     isAdmin: true,
     hobbies: ["Видеоигры", "Программирование", "вязание"]
 };
-console.log(analyzeUser(user));
-console.log(analyzeUser(admin));
+console.log("user: " + validate(user));
+
+console.log("admin: " + validate(admin));
