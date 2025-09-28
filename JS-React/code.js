@@ -88,6 +88,97 @@ function filterAndSortTasks (tasksJson) {
     return unfinishedTasks;
 }
 
+function validateUserData(data) {
+    let isValid;
+    for (const [field, value] of Object.entries(data)) {
+        let actualType = typeof(value);
+
+        if (actualType == 'object') {
+            validateUserData(value);
+        } else if (field == 'id') {
+            isValid = (actualType == 'number') ? true : false;
+        } else {
+            isValid = (actualType == 'string') ? true : false;
+        }
+        if (!isValid) {
+            return isValid;
+        }
+    }
+    return isValid
+}
+
+async function fetchAndProcessUsers() {
+    // получить пользователей ий API
+    let processedData = fetch ('https://jsonplaceholder.typicode.com/users')
+    .then ((response) => {
+        return response.json()
+    })
+    .then ((users) => {
+        let isValid
+        let validUsers = []
+        for (let user of users) {
+            isValid = validateUserData(user)
+            let generatedDoB = new Date(Math.floor(Math.random() * 1577880000000))
+            let now = new Date()
+            user.age = now.getFullYear() - generatedDoB.getFullYear()
+            if (isValid && user.website.endsWith('.com')) {
+                validUsers.push(user)
+            }
+
+        }
+        validUsers.sort((a, b) => {
+            return (a.age > b.age ? -1 : 1)
+        })
+        return(validUsers)
+    })
+
+    return processedData
+}
+
+class ApiClient {
+    constructor (url, ttl) {
+        this.url = url
+        this.ttl = ttl
+        this.cache = new Map()
+    }
+
+    async get (endpoint) {
+        const url = this.url + endpoint;
+        const cached = this.cache.get(url);
+        const now = Date.now();
+
+        if (cached && (now - cached.timestamp) <= this.ttl) {
+            return cached.data;
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+
+            clearTimeout(timeoutId);
+
+            if (response.status !== 200) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        this.cache.set(url, { data, timestamp: now });
+
+        return data;
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                throw new Error('Request aborted due to timeout');
+            } else if (err.message === 'Failed to fetch') {
+                throw new Error('Network error: Failed to fetch');
+            }
+            throw err;
+        }
+    }
+}
+
+
 // Задание 1
 const user = {
     name: "Tom",
@@ -141,3 +232,26 @@ console.log(filterAndSortTasks(tasksJson));
 
 //Задание 3
 
+(async () => {
+ const users = await fetchAndProcessUsers();
+ console.log(users);
+})();
+
+
+const api = new ApiClient("https://jsonplaceholder.typicode.com", 10000); 
+(async () => {
+ try {
+ const post = await api.get("/posts/1"); // Запрашиваем и кэшируем
+ console.log(post);
+ setTimeout(async () => {
+ const cachedPost = await api.get("/posts/1"); // Берётся из кэша
+ console.log(cachedPost);
+ }, 5000);
+ setTimeout(async () => {
+ const freshPost = await api.get("/posts/1"); // Новый запрос (TTL истёк)
+ console.log(freshPost);
+ }, 11000);
+ } catch (error) {
+ console.error("Ошибка:", error.message);
+ }
+})();
