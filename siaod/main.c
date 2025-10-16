@@ -3,9 +3,9 @@
 #include "pr1.h"
 #include "pr2.h"
 #include "pr3.h"
-#include "pr4.h"
-#include "pr5.h"
-#include "pr6.h"
+//#include "pr4.h"
+//#include "pr5.h"
+//#include "pr6.h"
 
 int main () {
     int menu;
@@ -17,13 +17,13 @@ int main () {
         case 1 :
             run_pr1();
             break;
-/*        case 2 :
+        case 2 :
             run_pr2();
             break;
         case 3 :
             run_pr3();
             break;
-        case 4 :
+/*        case 4 :
             run_pr4();
             break;
         case 5 :
