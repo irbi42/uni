@@ -1,16 +1,22 @@
 
-#ifndef PR3_H
-#define PR3_H
+#ifndef PR4_H
+#define PR4_H
 
-struct AVLNODE {
+#define M 2
+
+struct BNode {
     int data;
-    int balance;
-    struct AVLNODE *left;
-    struct AVLNODE *right;
+    struct Bpage * p;
+};
+struct Bpage {
+    int k;
+    struct Bpage * p0;
+    struct BNode e [2 * M];
 };
 
 void run_pr4();
 void createTable4 (int);
+void insertBTree(struct Bpage **, int);
 
 
 #endif

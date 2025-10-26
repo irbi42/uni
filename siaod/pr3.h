@@ -9,8 +9,6 @@ struct AVLNODE {
 };
 
 void run_pr3();
-void createTable3 (int);\
-void printAVLTree(struct AVLNODE *);
 void createTable3 (int);
 int addToAVL (int, struct AVLNODE **);
 struct AVLNODE* LLturn(struct AVLNODE *);
