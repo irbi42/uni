@@ -55,7 +55,7 @@ int main() {
     for (int i = 1; i < 15; i++) {
         accurate[i] = round(func(x) * 10000) / 10000.0;
         approx[i] = rounded[findLower(x)] + q * (rounded[findHigher(x)] - rounded[findLower(x)]);
-        printf("| %11.4f | %17.5f | %11.5f |\n", x, approx[i], accurate[i]);
+        printf("| %11.4f | %17.4f | %11.4f |\n", x, approx[i], accurate[i]);
         x = C + 0.6 * H * (i + 1);
         q = findQ(x);
     }

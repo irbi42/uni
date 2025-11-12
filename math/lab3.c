@@ -29,7 +29,7 @@ int findHigher(double x) {
 
 int main () {
     printf("----------------------\n");
-    printf("Значения функции с шагом h = %f на интервале [%f, %.4f]\n", H, C - H, C + 15 * H);
+    printf("Значения функции с шагом h = %.4f на интервале [%.4f, %.4f]\n", H, C - H, C + 15 * H);
     printf("----------------------\n");
     printf("| Знач x  |   F(x)   |\n");
     j[0] = C - H;
@@ -50,7 +50,7 @@ int main () {
         x = C + H * i;
         accurate[i] = cos(x * C);
         approx[i] = (rounded[i + 2] - rounded[i]) / (2.0 * H);
-        printf("| %11.4f | %17.5f | %11.5f |\n", x, approx[i], accurate[i]);
+        printf("| %11.4f | %17.4f | %11.4f |\n", x, approx[i], accurate[i]);
     }
 
     return 0;

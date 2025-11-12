@@ -36,7 +36,7 @@ double chordMethod(double a, double b, double epsilon) {
         
         iteration++;
         
-    } while (fabs(fx) > epsilon && iteration < 1000);
+    } while (fabs(fx) > epsilon);
 
     return x;
 }
@@ -70,7 +70,6 @@ double solveODE(double x0, double y0, double x_end, double epsilon) {
         }
         
         double y1, y2, error;
-        int adaptive_step = 0;
         
         do {
             y1 = runge_kutta_step(x, y, h);
@@ -82,12 +81,7 @@ double solveODE(double x0, double y0, double x_end, double epsilon) {
             
             if (error > epsilon) {
                 h /= 2;
-                adaptive_step++;
-                
-                if (adaptive_step > 10) {
-                    printf("Предупреждение: достигнуто максимальное число адаптаций шага\n");
-                    break;
-                }
+
             }
         } while (error > epsilon);
         
@@ -147,7 +141,7 @@ int main () {
     yr[0] = yi[0] = k;
 
     h = solveODE(xi[0], yi[0], x_end, 0.0001);
-    for (int i = 1; i <= step_count; i++) {
+    for (int i = 0; i <= step_count; i++) {
         printf("| %7.4f | %9.4f |\n",xr[i], yr[i]);
     }
 
@@ -158,16 +152,16 @@ int main () {
         xi[i] = 0.1 * i;
         q = findQ(xi[i]);
         yi[i] = yr[findLower(xi[i])] + q * (yr[findHigher(xi[i])] - yr[findLower(xi[i])]);
-        printf("| %7.4f | %9.5f |\n", xi[i], yi[i]);
+        printf("| %7.1f | %9.4f |\n", xi[i], yi[i]);
         
 
     }
 
 
-    double qt = (yi[0] + yi[20] / 2);
+    double qt = ((yi[0] * yi[0] + yi[20] *  yi[20]) / 2);
 
     for (int i = 1; i < 20; i++) {
-        qt += yi[i];
+        qt += yi[i] * yi[i];
     }
     qt = qt * 0.1;
 
