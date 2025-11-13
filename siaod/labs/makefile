@@ -24,7 +24,7 @@ endif
 
 # Основная цель
 $(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS) -lm
 
 # Общее правило для компиляции .c файлов
 %.o: %.c $(HEADERS)
