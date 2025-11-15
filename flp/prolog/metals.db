@@ -1,0 +1,16 @@
+:- dynamic metal/2.
+
+metal(метал, 0.3).
+metal(серебро, 63).
+metal(медь, 59.6).
+metal(золото, 45.5).
+metal(алюминий, 37.7).
+metal(вольфрам, 18.2).
+metal(железо, 10).
+metal(олово, 9.1).
+metal(сталь, 7.7).
+metal(свинец, 4.8).
+metal(титан, 2.4).
+metal(error, 23).
+metal(eee, 222).
+

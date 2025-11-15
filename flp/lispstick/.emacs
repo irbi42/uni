@@ -1,0 +1,6 @@
+(setq inferior-lisp-program "sbcl")
+(add-to-list 'load-path (concat (getenv "HOME") "\\" (getenv "SLIME")))
+(require 'slime)
+(slime-setup '(slime-fancy))
+(define-key global-map (kbd "<f12>") 'slime-selector)
+(slime)

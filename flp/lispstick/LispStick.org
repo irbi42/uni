@@ -1,0 +1,64 @@
+#+TITLE: LispStick! 
+#+OPTIONS: toc:nil language:de
+#+Author: Patrick Krusenotto
+* Vollständige Common-Lisp-Umgebung für Windows
+Gerade für Anfänger (und nicht nur für die) kann es gehörige Zeit in
+Anspruch nehmen, unter Windows eine vollständige Common-Lisp-Umgebung
+zusammenzusetzen.
+
+Damit das ein Ende hat, habe ich hier die ultimative Lösung für alle,
+die sich diese Arbeit sparen wollen: *LispStick!* ist eine
+vollständige, konfigurierte Installation die in einem beliebigen
+Verzeichnis oder auf einem USB-Stick (Nomen est Omen!) mobil
+installiert werden kann.
+
+* LispStick! besteht aus /SBCL/, /Emacs/, /SLIME/, und /Quicklisp/
+   * [[http://www.sbcl.org/][SBCL]] ist die aktuell populärste Common-Lisp Implementierung. 
+   * [[http://www.common-lisp.net/project/slime/][SLIME]], das Superior Lisp Interaction Mode für [[http://www.gnu.org/software/emacs/][Emacs]] ist die Entwicklungsumgebung der Wahl für Common Lisp. 
+   * [[http://www.quicklisp.org/][Quicklisp]] ist der komfortable Common-Lisp Paket-Manager.
+
+Alle Komponenten zusammen ergeben zusammen mit dem in Quicklisp
+enthaltenen Quickproject für mich das Wahlkonfiguration für die
+Lisp-Programmierung.
+     
+* Installation
+Zur Installation einfach folgendes Zipfile herunterladen und in einem
+beliebigen Verzeichnis (zB =D:\LispStick=) auspacken. Von dort die Datei
+=RUN.BAT= starten.
+
+* Upgrade
+Es ist jederzeit möglich, die LispStick!-Komponenten einzeln
+upzugraden. 
+
+Dazu geht man wie folgt vor: 
+   1. Die betreffende Komponente in das LispStick!-Verzeichnis installieren bzw dort entpacken.  
+   2. Die Datei =RUN.BAT= mit einem Editor
+      öffnen. In den ersten drei Zeilen befinden sich Vereinbarungen
+      von Environment-Variablen  =EMACS=, =SLIME= und =SBCL=. Diese
+      so anpassen, dass sie auf die neuen Komponenten verweisen.
+   3. Wenn alles funktioniert, die alte Komponente löschen.
+
+* Spezifika
+** Quicklisp/Quickproject
+Um ein neues Project azulegen, zunächst /quickproject/ laden:
+
+=(ql:quickload :quickproject)=
+
+dann mit 
+
+=(quickproject:make-project :meinprojekt :depends-on '(alexandria cl-ppcre))=
+
+das Projekt anlegen. (/alexandra/ und /cl-ppcre/ sind hier nur
+Beispiele für benötigte Systeme) Es befindet sich anschließend im
+Verzeichnis
+
+/LISPSTICK-HOME-DIR/ =/quicklisp/local-projects/meinprojekt=
+
+Später kann das System dann mit =(ql:quickload :meinprojekt)= geladen werden.
+* Kommentare und Fragen
+Die Dokumentationen zu den einzelnen Komponenten befindet sich auf den
+entsprechenden Websites. Sie sollten in folgender Reihenfolge gelesen werden:
+Emacs, SLIME, Quicklisp, SBCL. 
+
+Bei sonstigen Fragen bitte ein Email an patrick punkt krusenotto
+klammeraffe gmail punkt com
