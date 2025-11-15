@@ -32,11 +32,11 @@ void createTable2 (int n) {
     fill_mass(sorty, n, 0);
     fill_mass(sorty2, n, 1);
     fill_mass(unsorty, n, 4);
-    printf("%d Массивы данных: \n", n);
+    //printf("%d Массивы данных: \n", n);
     //print_mass(sorty, n);
     //print_mass(sorty2, n);
     //print_mass(unsorty, n);
-
+    
     printf("Размер | Высота ИСПД/СПД | Ср.Высота ИСПД/СПД  | Проверка | Ключ | Найден ИСПД/СПД \n");
     printf("%7d|", n);
 

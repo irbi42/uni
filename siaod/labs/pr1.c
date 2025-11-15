@@ -5,7 +5,7 @@
 
 
 void run_pr1 () {
-    printf("Размещаем дерево со следующими данными:  ");
+    printf("Вариант 9\nРазмещаем дерево со следующими данными:  ");
     // разместить дерево в памяти и запомнить случайными числами
     struct NODE root;
     root.left = NULL;
@@ -18,6 +18,7 @@ void run_pr1 () {
     struct NODE *temp = malloc(sizeof(struct NODE));
     temp->data = rand()%20 - 8;
     root.left = temp;
+    root.right = NULL;
     printf("%3d ", root.left->data);
 
     temp = malloc(sizeof(struct NODE));
