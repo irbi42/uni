@@ -1,4 +1,4 @@
-console.log("Hello!");
+
 
 function analyzeUser(user) {
     let isadmin = "Нет";
@@ -180,12 +180,15 @@ class ApiClient {
 
 
 // Задание 1
+
+console.log("Задание 1");
 const user = {
     name: "Tom",
     age: 12,
     isAdmin: false,
     hobbies: ["Видеоигры", "Рисование"]
 };
+console.log("Задание 1 Анализатор: ");
 console.log(analyzeUser(user));
 
 const admin = {
@@ -194,7 +197,7 @@ const admin = {
     isAdmin: true,
     hobbies: ["Видеоигры", "Программирование", "вязание"]
 };
-
+console.log("Задание 1 Валидатор: ");
 const rules = {name: 'string', age: 'number', isAdmin: 'boolean', hobbies: 'array'};
 const validate = createValidator(rules);
 
@@ -203,6 +206,7 @@ console.log("user: " + validate(user));
 console.log("admin: " + validate(admin));
 
 // Задание 2
+console.log("Задание 2");
 const userJson = `{
  "name": "Alice",
  "birthDate": "1995-05-12",
@@ -210,8 +214,12 @@ const userJson = `{
  "skills": ["JavaScript", "React"]
 }`;
 
+console.log("Задание 2 Валидация данных пользователя: ");
+
 console.log(processUserData(userJson));
 
+
+console.log("Задание 2 Фильтрация и сортировка задач: ");
 const tasksJson = `[
  {"id": 1, "title": "Купить продукты", "dueDate": "2025-10-25", "completed":
 false, "priority": 1},
@@ -231,13 +239,15 @@ false, "priority": 2},
 console.log(filterAndSortTasks(tasksJson));
 
 //Задание 3
+console.log("Задание 3 ");
 
+//console.log("Задание 3 Полуение и обработка данных с API: ");
 (async () => {
  const users = await fetchAndProcessUsers();
  console.log(users);
 })();
 
-
+//console.log("Задание 3 Кэширующий API клиент: ");
 const api = new ApiClient("https://jsonplaceholder.typicode.com", 10000); 
 (async () => {
  try {
