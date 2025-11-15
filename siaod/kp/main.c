@@ -3,9 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
-#include <windows.h>
+//#include <windows.h>
 
 #define DB_SIZE 4000
+#define M 2
+
 
 
 
@@ -24,10 +26,15 @@ typedef struct Record {
     int originalIndex;
 } Record;
 
-// typedef struct {
-//     int originalIndex;
-//     int currentIndex;
-// } IndexArray;
+typedef struct BNode {
+    Record * data;
+    struct Bpage * p;
+} BNode;
+typedef struct Bpage {
+    int k;
+    struct Bpage * p0;
+    struct BNode e [2 * M];
+} Bpage;
 
 typedef struct Queue {
     Record * data;
@@ -283,7 +290,7 @@ void sortDB () {
     
 }
 
-void quickSearch (int key) {
+void quickSearch (int key, Queue ** head, Queue ** tail) {
     sortDB();
 
     int left = 0;
@@ -303,12 +310,180 @@ void quickSearch (int key) {
         
         int i = right;
         while (DB[indexes[i]].sum == key){
+            push_back(&DB[indexes[i]], tail, head);
             printf("|%4d|%s|%7d|%s|%s|\n", (i + 1), DB[indexes[i]].fio, DB[indexes[i]].sum, DB[indexes[i]].date, DB[indexes[i]].attorney);
             i++;
         }
     } else {
         printf("Нет записей с суммой %d\n", key);
     }
+
+    
+}
+
+
+int findPosition(Bpage * a, Record * D) {
+    int R = 0;
+    while (R < a->k && a->e[R].data->fio[0] < D->fio[0]) {
+        R++;
+    }
+    return R;
+}
+
+void buildBTree(Record * D, Bpage * a, int * Rost, BNode * V) {
+    BNode u;
+    
+    if (a == NULL) {
+        V->data = D;
+        V->p = NULL;
+        *Rost = 1;
+        return;
+    }
+    
+    int R = findPosition(a, D);
+    
+    if (R < a->k && a->e[R].data == D) {
+        *Rost = 0;
+        return;
+    } 
+    Bpage * nextPage = (R == 0) ? a->p0 : a->e[R-1].p;
+    buildBTree(D, nextPage, Rost, &u);
+        
+    if (!(*Rost)) {
+        return;
+    }
+    
+    if (a->k < 2 * M) {
+        *Rost = 0;
+        for (int i = a->k; i > R; i--) {
+            a->e[i] = a->e[i-1];
+        }
+        a->e[R] = u;
+        a->k++;
+    } else {
+        Bpage * b = malloc(sizeof(Bpage));
+        b->k = 0;
+        b->p0 = NULL;
+        for (int i = 0; i < 2*M; i++) {
+            b->e[i].p = NULL;
+        }
+        
+        if (R <= M) {
+            if (R == M) {
+                *V = u;
+            } else {
+                *V = a->e[M-1];
+                for (int i = M-1; i > R; i--) {
+                    a->e[i] = a->e[i-1];
+                }
+                a->e[R] = u;
+            }
+            
+            for (int i = 0; i < M; i++) {
+                b->e[i] = a->e[i + M];
+                b->k++;
+            }
+        } else {
+            int newR = R - M - 1;
+            *V = a->e[M];
+
+            for (int i = 0; i < newR; i++) {
+                b->e[i] = a->e[i + M + 1];
+                b->k++;
+            }
+            
+            b->e[newR] = u;
+            b->k++;
+            
+            for (int i = newR + 1; i < M; i++) {
+                b->e[i] = a->e[i + M];
+                b->k++;
+            }
+        }
+
+        a->k = M;
+        b->p0 = V->p;
+        V->p = b;
+        *Rost = 1;
+    }
+}
+
+Bpage * createPage() {
+    Bpage * page = malloc(sizeof(Bpage));
+    page->k = 0;
+    page->p0 = NULL;
+    for (int i = 0; i < 2*M; i++) {
+        page->e[i].p = NULL;
+        page->e[i].data = NULL;
+    }
+    return page;
+}
+
+
+void insertBTree(Bpage ** root, Record * data) {
+    int Rost = 0;
+    struct BNode V;
+    
+    if (*root == NULL) {
+        *root = createPage();
+        (*root)->e[0].data = data;
+        (*root)->k = 1;
+        return;
+    }
+    
+    buildBTree(data, *root, &Rost, &V);
+    
+    if (Rost) {
+        Bpage * newRoot = createPage();
+        newRoot->e[0] = V;
+        newRoot->k = 1;
+        newRoot->p0 = *root;
+        *root = newRoot;
+    }
+}
+
+
+void printBTree(Bpage * root, int level) {
+    if (root == NULL) return;
+    
+    printf("Level %d (%d elements): ", level, root->k);
+    for (int i = 0; i < root->k; i++) {
+        printf("%d ", root->e[i].data);
+    }
+    printf("\n");
+    
+    if (root->p0 != NULL) {
+        printf("  Left child: ");
+        printBTree(root->p0, level + 1);
+    }
+    
+    for (int i = 0; i < root->k; i++) {
+        if (root->e[i].p != NULL) {
+            printf("  Child after %d: ", root->e[i].data);
+            printBTree(root->e[i].p, level + 1);
+        }
+    }
+}
+
+void searchDB () {
+    printf("Введите сумму вклада: ");
+    int key;
+    scanf("%d", &key);
+    Queue * tail = NULL;
+    Queue * head = NULL;
+    quickSearch(key, &head, &tail);
+
+    printf("Построение Б-дарева\n");
+
+    Record * data = pop_front(&tail, &head);
+    Bpage * root = NULL;
+
+    while (data != NULL) {
+        insertBtree(&root, data);
+    };
+
+    printf("Полуенное Б-дерево: \n");
+    printBTree(root, 0);
 
     printf("Для выхода в меню нажмите 0");
     char menu[2];
@@ -346,10 +521,7 @@ int main() {
                 printSortedDB();
                 break;
             case '3' :
-                printf("Введите сумму вклада: ");
-                int key;
-                scanf("%d", &key);
-                quickSearch(key);
+                searcDB();
                 break;
             // case 4 :
             //     printDB();
@@ -426,6 +598,7 @@ void printQueue(Queue **head)
         temp = temp->next;
         i++;
         if ((i % 20) == 0) {
+            printf("Вывести еще? (y/n)");
             char m[2];
             if (fgets(m, sizeof(m), stdin) == NULL) {
             break;
