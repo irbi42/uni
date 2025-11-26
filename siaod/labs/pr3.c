@@ -8,7 +8,7 @@
 #include "rjin.h"
 
 float turns = 0;
-
+//rts.sit@mail.ru
 
 int countSizeAVL (struct AVLNODE *root) {
     if (root == NULL) {
@@ -40,14 +40,33 @@ void run_pr3 () {
     createTable3(n3);
     printf("-----------------------------------------------------------\n");
     createTable3(n4);
+    printf("-----------------------------------------------------------\n");
 }
 
 void createTable3 (int n) {
     int sorty[n]; 
     int sorty2[n], unsorty[n];
-    fill_mass(sorty, n, 0);
-    fill_mass(sorty2, n, 1);
+    // fill_mass(sorty, n, 0);
+    // fill_mass(sorty2, n, 1);
     fill_mass(unsorty, n, 4);
+
+    for (int i = 0; i < n; i++) {
+        sorty[i] = unsorty[i];
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (sorty[i] < sorty[j]) {
+                int temp = sorty[j];
+                sorty[j] = sorty[i];
+                sorty[i] = temp;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        sorty2[i] = sorty[n - i - 1];
+    }
     // printf("%d Массивы данных: \n", n);
     // print_mass(sorty, n);
     // print_mass(sorty2, n);
@@ -56,8 +75,7 @@ void createTable3 (int n) {
     printf("Размер | Высота АВЛ |   Теор. оценка   | Ср. Кол. Поворотов  \n");
     printf("%7d|", n);
 
-    float teorHeightMin = log2f(n + 1);
-    float teorHeightMax = 1.44 * log2f(n + 2) - 0.328;
+    float teorHeightMax = 1.44 * log2f(n + 2) - 1;
 
     struct AVLNODE *avl = NULL;
     turns = 0;
@@ -69,7 +87,7 @@ void createTable3 (int n) {
     turns = turns / n;
     float treeHeight = averageHeight(avl);
 
-    printf("%10.3f  | %3.2f < h < %5.2f |%8.2f\n", treeHeight, teorHeightMin, teorHeightMax, turns);
+    printf("%10.3f  |    h < %5.2f    |%8.2f\n", treeHeight, teorHeightMax, turns);
 
     avl = NULL;
     turns = 0;
@@ -80,7 +98,7 @@ void createTable3 (int n) {
     treeHeight = averageHeight(avl);
 
     printf("%7d|", n);
-    printf("%10.3f  | %3.2f < h < %5.2f |%8.2f\n", treeHeight, teorHeightMin, teorHeightMax, turns);
+    printf("%10.3f  |     h < %5.2f    |%8.2f\n", treeHeight, teorHeightMax, turns);
 
 
     avl = NULL;
@@ -91,7 +109,7 @@ void createTable3 (int n) {
     turns = turns / n;
     treeHeight = averageHeight(avl);
     printf("%7d|", n);
-    printf("%10.3f  | %3.2f < h < %5.2f |%8.2f\n", treeHeight, teorHeightMin, teorHeightMax, turns);
+    printf("%10.3f  |     h < %5.2f    |%8.2f\n", treeHeight, teorHeightMax, turns);
 
     return;
 }
@@ -102,34 +120,34 @@ int addToAVL(int d, struct AVLNODE **root) {
     if (*root == NULL) {
         *root = malloc(sizeof(struct AVLNODE));
         if (*root == NULL) {
-            return 0; // Ошибка выделения памяти
+            return 0;
         }
         (*root)->data = d;
         (*root)->balance = 0;
         (*root)->left = NULL;
         (*root)->right = NULL;
-        return 1; // Рост произошел
+        return 1;
     }
     
     if (d < (*root)->data) {
         growth = addToAVL(d, &(*root)->left);
         if (growth) {
             switch ((*root)->balance) {
-                case 1:  // Был перевес справа
+                case 1:
                     (*root)->balance = 0;
                     growth = 0;
                     break;
-                case 0:  // Был сбалансирован
+                case 0:  
                     (*root)->balance = -1;
                     growth = 1;
                     break;
-                case -1: // Был перевес слева - нужна балансировка
+                case -1:
                     if ((*root)->left->balance == -1) {
-                        // LL случай
+                        
                         *root = LLturn(*root);
                         turns++;
                     } else {
-                        // LR случай
+                        
                         *root = LRturn(*root);
                         turns++;
                     }
@@ -176,12 +194,11 @@ struct AVLNODE* LLturn(struct AVLNODE* root) {
     
     newRoot->right = root;
     root->left = temp;
-    
-    // Обновляем балансы напрямую
+
     if (newRoot->balance == -1) {
         newRoot->balance = 0;
         root->balance = 0;
-    } else { // newRoot->balance == 0 (редкий случай)
+    } else { 
         newRoot->balance = 1;
         root->balance = -1;
     }
@@ -196,11 +213,11 @@ struct AVLNODE* RRturn(struct AVLNODE* root) {
     newRoot->left = root;
     root->right = temp;
     
-    // Обновляем балансы напрямую
+
     if (newRoot->balance == 1) {
         newRoot->balance = 0;
         root->balance = 0;
-    } else { // newRoot->balance == 0 (редкий случай)
+    } else {
         newRoot->balance = -1;
         root->balance = 1;
     }
@@ -212,20 +229,18 @@ struct AVLNODE* LRturn(struct AVLNODE* root) {
     struct AVLNODE* B = root->left;
     struct AVLNODE* C = B->right;
     
-    // Первый поворот
     B->right = C->left;
     C->left = B;
     root->left = C->right;
     C->right = root;
     
-    // Обновляем балансы
     if (C->balance == -1) {
         root->balance = 1;
         B->balance = 0;
     } else if (C->balance == 0) {
         root->balance = 0;
         B->balance = 0;
-    } else { // C->balance == 1
+    } else {
         root->balance = 0;
         B->balance = -1;
     }
@@ -238,20 +253,18 @@ struct AVLNODE* RLturn(struct AVLNODE* root) {
     struct AVLNODE* B = root->right;
     struct AVLNODE* C = B->left;
     
-    // Первый поворот
     B->left = C->right;
     C->right = B;
     root->right = C->left;
     C->left = root;
     
-    // Обновляем балансы
     if (C->balance == 1) {
         root->balance = -1;
         B->balance = 0;
     } else if (C->balance == 0) {
         root->balance = 0;
         B->balance = 0;
-    } else { // C->balance == -1
+    } else { 
         root->balance = 0;
         B->balance = 1;
     }

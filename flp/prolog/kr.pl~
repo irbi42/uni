@@ -1,7 +1,7 @@
 
 
 initialize_database :-
-    (   exists_file('/home/irbi42/uni/flp/prolog/metals.db')
+    (   exists_file('/home/irbi/prolog/metals.db')
     ->  consult('/home/irbi42/uni/flp/prolog/metals.db'),
         write('База данных загружена из файла metals.db'), nl
     ;   write('Файл metals.db не найден. Создана пустая база данных.'), nl

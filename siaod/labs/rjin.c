@@ -44,7 +44,7 @@ void print_mass(int* mass, int l)
 
 void fill_mass(int *mass, int l, int mode)
 {
-    srand(time(NULL));
+   // srand(time(NULL));
     switch(mode)
     {
         case 0 :
@@ -87,7 +87,7 @@ void fill_mass(int *mass, int l, int mode)
                 int f = 0;
                 int t;
                 while (!f) {
-                    t = rand()%l;
+                    t = rand()%200;
                     if (i == 0) break;
                     for (int j = 0; j < i; j++) {
                         if (mass[j] == t) break;

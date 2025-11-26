@@ -11,7 +11,7 @@ void run_pr1();
 void printTree(struct NODE *);
 int countSize (struct NODE *);
 int countHeight(struct NODE *);
-int countAverageHeight (struct NODE *);
+double countAverageHeight (struct NODE *);
 int countCheckSum (struct NODE *);
 
 #endif

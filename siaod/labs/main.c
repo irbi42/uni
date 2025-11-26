@@ -6,7 +6,7 @@
 #include "pr4.h"
 #include "pr5.h"
 
-#define CLEAR() system("cls||clear")
+
 
 int main () {
     int menu;
@@ -14,7 +14,6 @@ int main () {
     do {
         printf("Введите номер работы, которую хотите запустить(0 - Выход): ");
         scanf("%d", &menu);
-        CLEAR();
         switch(menu)
         {
             case 1 :

@@ -7,59 +7,35 @@
 #include "pr4.h"
 #include "rjin.h"
 
-//для тестов, закоментить после проверки
-void printBTree(struct Bpage * root, int level) {
-    if (root == NULL) return;
-    
-    printf("Level %d (%d elements): ", level, root->k);
-    for (int i = 0; i < root->k; i++) {
-        printf("%d ", root->e[i].data);
-    }
-    printf("\n");
-    
-    if (root->p0 != NULL) {
-        printf("  Left child: ");
-        printBTree(root->p0, level + 1);
-    }
-    
-    for (int i = 0; i < root->k; i++) {
-        if (root->e[i].p != NULL) {
-            printf("  Child after %d: ", root->e[i].data);
-            printBTree(root->e[i].p, level + 1);
-        }
-    }
+struct BNODE {
+    int data;
+    int balance;
+    struct BNODE * left;
+    struct BNODE * right;
+};
+
+void insertBTree(struct BNODE **, int);
+
+int hr, vr;
+
+int countSizeB (struct BNODE *root) {
+    if (root == NULL) {
+        return 0;
+    } else return (1 + countSizeB(root->left) + countSizeB(root->right));
 }
 
-void calculateHeightSum(struct Bpage* root, int currentDepth, int* totalHeightSum, int* totalElements) {
-    if (root == NULL) return;
-
-    for (int i = 0; i < root->k; i++) {
-        (*totalHeightSum) += currentDepth;
-        (*totalElements) += 1;
-    }
-
-    if (root->p0 != NULL) {
-        calculateHeightSum(root->p0, currentDepth + 1, totalHeightSum, totalElements);
-    }
-    
-    for (int i = 0; i < root->k; i++) {
-        if (root->e[i].p != NULL) {
-            calculateHeightSum(root->e[i].p, currentDepth + 1, totalHeightSum, totalElements);
-        }
-    }
+int averagePathB(struct BNODE *root, int l) {
+    if (root == NULL) {
+        return 0;
+    } else return (l + averagePathB(root->left, (l + 1)) + averagePathB(root->right, (l + 1)));
 }
 
-double findAverageHeight(struct Bpage * root) {
-    if (root == NULL) return 0.0;
-    
-    int totalHeightSum = 0;
-    int totalElements = 0;
-    
-    calculateHeightSum(root, 1, &totalHeightSum, &totalElements);
-    
-    if (totalElements == 0) return 0.0;
-    
-    return (double)totalHeightSum / totalElements;
+double findAverageHeight (struct BNODE *root) {
+    int path = averagePathB(root, 1);
+    int size = countSizeB(root);
+    float res = 1.0f * (path) / size;
+    //printf("%4d %4d  %2.2f", path, size, res);
+    return res;
 }
 
 
@@ -73,26 +49,49 @@ void run_pr4 () {
     createTable4(n3);
     printf("------------------------------------------------------\n");
     createTable4(n4);
+    printf("------------------------------------------------------\n");
+
 }
 
 void createTable4 (int n) {
     int sorty[n]; 
     int sorty2[n], unsorty[n];
-    fill_mass(sorty, n, 0);
-    fill_mass(sorty2, n, 1);
+    // fill_mass(sorty, n, 0);
+    // fill_mass(sorty2, n, 1);
     fill_mass(unsorty, n, 4);
+
+    for (int i = 0; i < n; i++) {
+        sorty[i] = unsorty[i];
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (sorty[i] < sorty[j]) {
+                int temp = sorty[j];
+                sorty[j] = sorty[i];
+                sorty[i] = temp;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        sorty2[i] = sorty[n - i - 1];
+    }
     // printf("%d Массивы данных: \n", n);
     // print_mass(sorty, n);
     // print_mass(sorty2, n);
     // print_mass(unsorty, n);
-    struct Bpage * root = NULL;
+    struct BNODE * root = NULL;
 
     
-    double teorHeight = ((log((n + 1)) - 1) / log((M + 1))) + 1;
+    double teorHeight = ((log((n + 1)) - 1) / log(2)) + 1;
+    //double teorHeight = 2*log(n + 1);
 
     printf("Размер | Cp. Высота | Теор. оценка \n");
-    printf("%7d|", n);
 
+    printf("%7d|", n);
+    hr = 1;
+    vr = 1;
     for (int i = 0; i < n; i++) {
         insertBTree(&root, sorty[i]);
         // printf("After inserting %d:\n", sorty[i]);
@@ -100,10 +99,12 @@ void createTable4 (int n) {
         // printf("---\n");
     };
     double anerageHeight = findAverageHeight(root);
-    printf("%11.3f |%13.3f \n", anerageHeight, teorHeight);
+    printf("%11.2f |%13.2f \n", anerageHeight, teorHeight);
 
     printf("%7d|", n);
-
+    root = NULL;
+    hr = 1;
+    vr = 1;
     for (int i = 0; i < n; i++) {
         insertBTree(&root, sorty2[i]);
         // printf("After inserting %d:\n", sorty[i]);
@@ -111,10 +112,12 @@ void createTable4 (int n) {
         // printf("---\n");
     };
     anerageHeight = findAverageHeight(root);
-    printf("%11.3f |%13.3f \n", anerageHeight, teorHeight);
+    printf("%11.2f |%13.2f \n", anerageHeight, teorHeight);
 
     printf("%7d|", n);
-
+    root = NULL;
+    hr = 1;
+    vr = 1;
     for (int i = 0; i < n; i++) {
         insertBTree(&root, unsorty[i]);
         // printf("After inserting %d:\n", sorty[i]);
@@ -122,127 +125,57 @@ void createTable4 (int n) {
         // printf("---\n");
     };
     anerageHeight = findAverageHeight(root);
-    printf("%11.3f |%13.3f \n", anerageHeight, teorHeight);
+    printf("%11.2f |%13.2f \n", anerageHeight, teorHeight);
 
 
 }
 
-int findPosition(struct Bpage * a, int D) {
-    int R = 0;
-    while (R < a->k && a->e[R].data < D) {
-        R++;
-    }
-    return R;
-}
-
-void buildBTree(int D, struct Bpage * a, int * Rost, struct BNode * V) {
-    struct BNode u;
-    
-    if (a == NULL) {
-        V->data = D;
-        V->p = NULL;
-        *Rost = 1;
+void insertBTree(struct BNODE ** root, int data) {
+    if (*root == NULL) {
+        *root = malloc(sizeof(struct BNODE));
+        (*root)->data = data;
+        (*root)->balance = 0;
+        (*root)->left = NULL;
+        (*root)->right = NULL;
+        vr = 1;
         return;
-    }
-    
-    int R = findPosition(a, D);
-    
-    if (R < a->k && a->e[R].data == D) {
-        *Rost = 0;
-        return;
-    } 
-    struct Bpage * nextPage = (R == 0) ? a->p0 : a->e[R-1].p;
-    buildBTree(D, nextPage, Rost, &u);
-        
-    if (!(*Rost)) {
-        return;
-    }
-    
-    if (a->k < 2 * M) {
-        *Rost = 0;
-        for (int i = a->k; i > R; i--) {
-            a->e[i] = a->e[i-1];
-        }
-        a->e[R] = u;
-        a->k++;
-    } else {
-        struct Bpage * b = malloc(sizeof(struct Bpage));
-        b->k = 0;
-        b->p0 = NULL;
-        for (int i = 0; i < 2*M; i++) {
-            b->e[i].p = NULL;
-        }
-        
-        if (R <= M) {
-            if (R == M) {
-                *V = u;
+    } else if ((*root)->data > data){
+        insertBTree(&(*root)->left, data);
+        if (vr) {
+            if ((*root)->balance == 0) {
+                struct BNODE * q = (*root)->left;
+                (*root)->left = q->right;
+                q->right = (*root);
+                (*root) = q;
+                q->balance = 1;
+                vr = 0;
+                hr = 1;
             } else {
-                *V = a->e[M-1];
-                for (int i = M-1; i > R; i--) {
-                    a->e[i] = a->e[i-1];
-                }
-                a->e[R] = u;
-            }
-            
-            for (int i = 0; i < M; i++) {
-                b->e[i] = a->e[i + M];
-                b->k++;
+                (*root)->balance = 0;
+                hr = 1;
             }
         } else {
-            int newR = R - M - 1;
-            *V = a->e[M];
-
-            for (int i = 0; i < newR; i++) {
-                b->e[i] = a->e[i + M + 1];
-                b->k++;
-            }
-            
-            b->e[newR] = u;
-            b->k++;
-            
-            for (int i = newR + 1; i < M; i++) {
-                b->e[i] = a->e[i + M];
-                b->k++;
+            hr = 0;
+        }
+    } else if ((*root)->data < data) {
+        insertBTree(&(*root)->right, data);
+        if (vr) {
+            (*root)->balance = 1;
+            vr = 0;
+            hr = 1;
+        } else if (hr) {
+            if ((*root)->balance > 0) {
+                struct BNODE * q = (*root)->right;
+                (*root)->right = q->left;
+                (*root)->balance = 0;
+                q->balance = 0;
+                q->left = (*root);
+                (*root) = q;
+                vr = 1;
+                hr = 0;
+            } else {
+                hr = 0;
             }
         }
-
-        a->k = M;
-        b->p0 = V->p;
-        V->p = b;
-        *Rost = 1;
-    }
-}
-
-struct Bpage * createPage() {
-    struct Bpage * page = malloc(sizeof(struct Bpage));
-    page->k = 0;
-    page->p0 = NULL;
-    for (int i = 0; i < 2*M; i++) {
-        page->e[i].p = NULL;
-        page->e[i].data = 0;
-    }
-    return page;
-}
-
-
-void insertBTree(struct Bpage ** root, int data) {
-    int Rost = 0;
-    struct BNode V;
-    
-    if (*root == NULL) {
-        *root = createPage();
-        (*root)->e[0].data = data;
-        (*root)->k = 1;
-        return;
-    }
-    
-    buildBTree(data, *root, &Rost, &V);
-    
-    if (Rost) {
-        struct Bpage * newRoot = createPage();
-        newRoot->e[0] = V;
-        newRoot->k = 1;
-        newRoot->p0 = *root;
-        *root = newRoot;
     }
 }

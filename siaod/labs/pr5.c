@@ -12,54 +12,101 @@ void run_pr5 () {
     int n2 = 50, n3 = 100, n4 = 200;
     createTable5(n1);
     printf("------------------------------------------------------\n");
-    createTable5(n2);
+     createTable5(n2);
     printf("------------------------------------------------------\n");
     createTable5(n3);
     printf("------------------------------------------------------\n");
     createTable5(n4);
+    printf("------------------------------------------------------\n");
+
 }
 
 void createTable5 (int n) {
     srand(time(NULL));
-    int sorty[n]; 
-    int unsorty[n];
-    fill_mass(sorty, n, 0);
-    fill_mass(unsorty, n, 4);
+    int weights[n];//, sorty[n], sorty2[n];
+    int value[n];
+    //fill_mass(sorty, n, 0);
+    fill_mass(weights, n, 4);
+    fill_mass(value, n, 4);
+
+
+    // for (int i = 0; i < n; i++) {
+    //     sorty[i] = weights[i];
+    // }
+
+    // for (int i = 0; i < n; i++) {
+    //     for (int j = 0; j < n; j++) {
+    //         if (sorty[i] < sorty[j]) {
+    //             int temp = sorty[j];
+    //             sorty[j] = sorty[i];
+    //             sorty[i] = temp;
+    //         }
+    //     }
+    // }
+
+    // for (int i = 0; i < n; i++) {
+    //     sorty2[i] = sorty[n - i - 1];
+    // }
+
+
     // printf("%d Массивы данных: \n", n);
+    //printf("------------------------------------------------------\n");
     // print_mass(sorty, n);
-    // print_mass(sorty2, n);
-    //print_mass(unsorty, n);
+    // printf("------------------------------------------------------\n");
+    // print_mass(value, n);
+    // printf("------------------------------------------------------\n");
+    // print_mass(weights, n);
+    // printf("------------------------------------------------------\n");
     DopNode * root = NULL;
     DopNode * values = malloc(n * sizeof(DopNode));
     double a1w, a2w;
 
     printf("Размер | Cp. Высота A1 | Cp. Высота A2 \n");
+//    printf("%7d|", n);
+
+//     for (int i = 0; i < n; i++) {
+//         values[i].data = value[i];
+//         values[i].weight = sorty[i];
+//     };
+
+//     root = createDOP1(values, n);
+//     a1w = countAverageWeightHeight(root);
+
+//     //visualDOPTree(root);
+
+//     root = createDOP2(values, n);
+//     a2w = countAverageWeightHeight(root);
+
+//     //visualDOPTree(root);
+    
+//     printf("%14.3f |%14.3f \n", a1w, a2w);
+
+// //----------------------------------------
+// printf("%7d|", n);
+
+//     for (int i = 0; i < n; i++) {
+//         values[i].data = value[i];
+//         values[i].weight = sorty2[i];
+//     };
+
+//     root = createDOP1 (values, n);
+//     a1w = countAverageWeightHeight(root);
+    
+//     //visualDOPTree(root);
+
+//     root = createDOP2(values, n);
+//     a2w = countAverageWeightHeight(root);
+
+//     //visualDOPTree(root);
+//     printf("%14.3f |%14.3f \n", a1w, a2w);
+
+//------------------------------------------------
+
     printf("%7d|", n);
 
     for (int i = 0; i < n; i++) {
-        values[i].data = sorty[i];
-        values[i].weight = i;
-    };
-
-    root = createDOP1(values, n);
-    a1w = countAverageWeightHeight(root);
-
-    //visualDOPTree(root);
-
-    root = createDOP2(values, n);
-    a2w = countAverageWeightHeight(root);
-
-    //visualDOPTree(root);
-    
-    printf("%14.3f |%14.3f \n", a1w, a2w);
-
-//----------------------------------------
-    
-    printf("%7d|", n);
-
-    for (int i = 0; i < n; i++) {
-        values[i].data = unsorty[i];
-        values[i].weight = rand()%100;
+        values[i].data = value[i];
+        values[i].weight = weights[i];
     };
 
     root = createDOP1 (values, n);
@@ -144,20 +191,24 @@ void addNode (DopNode **root, DopNode * value) {
 
 DopNode * createDOP1 (DopNode * value, int n) {
     DopNode * root = NULL;
+    int * indexes = malloc(n * sizeof(int));
+
     for (int i = 0; i < n; i++) {
-        value[i].use = 0;
-    };
+        indexes[i] = i;
+    }
+    quick_sort(value, indexes, n);
+
     for (int i = 0; i < n; i++) {
-        int max = 0;
-        int index = 0;
-        for (int j = 0; j < n; j++){
-            if ((value[j].weight > max) && !value[j].use) {
-                max = value[j].weight;
-                index = j;
-            }
-        }
-        value[index].use = 1;
-        addNode (&root, &value[index]);
+        // int max = 0;
+        // int index = 0;
+        // for (int j = 0; j < n; j++){
+        //     if ((value[j].weight > max) && !value[j].use) {
+        //         max = value[j].weight;
+        //         index = j;
+        //     }
+        // }
+        // value[index].use = 1;
+        addNode (&root, &value[indexes[i]]);
 
         // printf("After inserting %d:\n", value[index].data);
         // visualDOPTree(root);

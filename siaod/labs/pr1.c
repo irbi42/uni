@@ -57,11 +57,11 @@ void run_pr1 () {
     // высоты дерева
     int height = countHeight(&root);
     // средней высоты дерева
-    int avrHeight = countAverageHeight(&root);
+    double avrHeight = countAverageHeight(&root);
     // контрольной суммы
     int checkSum = countCheckSum (&root);
     // проверить и вывести на экран
-    printf("Результаты вычислений для построенного дерева: \n Размер дерева: %d \n Высота дерева: %d \n Средняя высота дерева: %d \n Контрольная сумма: %d \n", size, height, avrHeight, checkSum);
+    printf("Результаты вычислений для построенного дерева: \n Размер дерева: %d \n Высота дерева: %d \n Средняя высота дерева: %.2f \n Контрольная сумма: %d \n", size, height, avrHeight, checkSum);
     // написать обход слева направо и вывести на экран
     printf("Обход дерева слева направо: ");
     printTree(&root);
@@ -100,8 +100,8 @@ int countAveragePath(struct NODE *root, int l) {
     } else return (l + countAveragePath(root->left, (l + 1)) + countAveragePath(root->right, (l + 1)));
 }
 
-int countAverageHeight (struct NODE *root) {
-    return countAveragePath(root, 1)/countSize(root);
+double countAverageHeight (struct NODE *root) {
+    return countAveragePath(root, 1) * 1.0 /countSize(root);
 }
 
 int countCheckSum (struct NODE *root) {

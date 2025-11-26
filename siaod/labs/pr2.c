@@ -29,13 +29,31 @@ void run_pr2 () {
 void createTable2 (int n) {
     int sorty[n]; 
     int sorty2[n], unsorty[n];
-    fill_mass(sorty, n, 0);
-    fill_mass(sorty2, n, 1);
+
     fill_mass(unsorty, n, 4);
-    //printf("%d Массивы данных: \n", n);
-    //print_mass(sorty, n);
-    //print_mass(sorty2, n);
-    //print_mass(unsorty, n);
+
+    for (int i = 0; i < n; i++) {
+        sorty[i] = unsorty[i];
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (sorty[i] < sorty[j]) {
+                int temp = sorty[j];
+                sorty[j] = sorty[i];
+                sorty[i] = temp;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        sorty2[i] = sorty[n - i - 1];
+    }
+
+    // printf("%d Массивы данных: \n", n);
+    // print_mass(sorty, n);
+    // print_mass(sorty2, n);
+    // print_mass(unsorty, n);
     
     printf("Размер | Высота ИСПД/СПД | Ср.Высота ИСПД/СПД  | Проверка | Ключ | Найден ИСПД/СПД \n");
     printf("%7d|", n);
@@ -52,9 +70,9 @@ void createTable2 (int n) {
 
     printf("|");
 
-    int avrISDP = countAverageHeight(isdp); 
-    int avrSDP = countAverageHeight(sdp);
-    printf("%10d/%9d ", avrISDP, avrSDP);
+    double avrISDP = countAverageHeight(isdp); 
+    double avrSDP = countAverageHeight(sdp);
+    printf("%10.2f/%9.2f ", avrISDP, avrSDP);
 
     printf("|");
 
@@ -64,7 +82,7 @@ void createTable2 (int n) {
 
     printf("|");
 
-    int key = 1006 % n;
+    int key = sorty[1006 % n];
     printf("%5d ", key);
     printf("|");
     struct NODE *res = TreeSearch(isdp, key);
@@ -79,29 +97,30 @@ void createTable2 (int n) {
         addToSDP(sorty2[i], &sdp);
     };
 
-    heightISDP = 0;
+    //heightISDP = 0;
     heightSDP = countHeight(sdp);
     printf("%8d/%7d ", heightISDP, heightSDP);
 
     printf("|");
 
-    avrISDP = 0; 
+    //avrISDP = 0; 
     avrSDP = countAverageHeight(sdp);
-    printf("%10d/%9d ", avrISDP, avrSDP);
+    printf("%10.2f/%9.2f ", avrISDP, avrSDP);
 
     printf("|");
 
-    testISDP = 0;
+    //testISDP = 0;
     testSDP = isSearchTree(sdp);
     printf("%4d/%4d ", testISDP, testSDP);
 
     printf("|");
 
-    key = 1007 % n;
     printf("%5d ", key);
     printf("|");
+    free(res);
     res = NULL;
-    printf(" %7d/", (res == NULL) ? 0 : 1);
+    res = TreeSearch(isdp, key);
+    printf(" %4d/", (res == NULL) ? 0 : 1);
     res = TreeSearch(sdp, key); 
     printf(" %4d \n", (res == NULL) ? 0 : 1);
 
@@ -112,29 +131,30 @@ void createTable2 (int n) {
         addToSDP(unsorty[i], &sdp);
     };
 
-    heightISDP = 0;
+    //heightISDP = 0;
     heightSDP = countHeight(sdp);
     printf("%8d/%7d ", heightISDP, heightSDP);
 
     printf("|");
 
-    avrISDP = 0; 
+    //avrISDP = 0; 
     avrSDP = countAverageHeight(sdp);
-    printf("%10d/%9d ", avrISDP, avrSDP);
+    printf("%10.2f/%9.2f ", avrISDP, avrSDP);
 
     printf("|");
 
-    testISDP = 0;
+    //testISDP = 0;
     testSDP = isSearchTree(sdp);
     printf("%4d/%4d ", testISDP, testSDP);
 
     printf("|");
 
-    key = 1007 % n;
     printf("%5d ", key);
     printf("|");
+    free(res);
     res = NULL;
-    printf(" %7d/", (res == NULL) ? 0 : 1);
+    res = TreeSearch(isdp, key);
+    printf(" %4d/", (res == NULL) ? 0 : 1);
     res = TreeSearch(sdp, key); 
     printf(" %4d \n", (res == NULL) ? 0 : 1);
 
