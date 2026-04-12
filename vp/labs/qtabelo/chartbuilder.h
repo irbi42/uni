@@ -11,10 +11,12 @@ public:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void buildBarChart(const QModelIndexList &selectedCells);
     void exportToPng(const QString &path);
+    void closeDiagram();
 
 private:
     QTableWidget *m_sourseTable;
     QMap<QString, double> m_data;
+    QList<QGraphicsItem*> m_items;
 
 };
 

@@ -30,7 +30,7 @@ private slots:
     void onClearHistory();
     void onAbout();
     void onHistoryItemClicked (QListWidgetItem *item);
-    void clearStatusBarMessage();
+    //void clearStatusBarMessage();
     void updateHistoryList();
     //Доп Задание
     void onExport ();

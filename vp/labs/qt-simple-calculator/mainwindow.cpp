@@ -154,9 +154,9 @@ void MainWindow::onSaveAction () {
 
 }
 
-void MainWindow::clearStatusBarMessage() {
-    ui->statusBar->clearMessage();
-}
+// void MainWindow::clearStatusBarMessage() {
+//     ui->statusBar->clearMessage();
+// }
 
 void MainWindow::updateHistoryList () {
     historyView->clear();

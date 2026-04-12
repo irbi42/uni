@@ -116,16 +116,24 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     connect(&process, &QProcess::readyReadStandardOutput, this, [this]() {
-        runnerOutput->setPlainText(process.readAllStandardOutput());
+        runnerOutput->appendPlainText(process.readAllStandardOutput());
     });
 
-    connect(&process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this](int exitCode, QProcess::ExitStatus status) {
-        if (status == QProcess::NormalExit) {
-            QString output = process.readAllStandardOutput();
-            QString errors = process.readAllStandardError();
-            runnerOutput->setPlainText("Результат: \n" + output + "\n\n" + errors);
-        }
+    connect(&process, &QProcess::readyReadStandardError, this, [this]() {
+        runnerOutput->appendPlainText("[ERROR] " + process.readAllStandardError());
     });
+
+    connect(&process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, [this](int exitCode, QProcess::ExitStatus status) {
+                if (status == QProcess::NormalExit && exitCode == 0) {
+                    runnerOutput->appendPlainText("\nСкрипт завершен");
+                } else if (status == QProcess::NormalExit && exitCode != 0) {
+                    runnerOutput->appendPlainText(QString("\nКод возврата: %1").arg(exitCode));
+                }
+                if (QFile::exists("temp.py")) {
+                    QFile::remove("temp.py");
+                }
+            });
 }
 
 MainWindow::~MainWindow()
@@ -192,11 +200,10 @@ void MainWindow::onRunScript() {
     }
 
     QString fileName;
-    if (!ui->plainTextEdit->document()->isModified()) {
-        fileName = currentFile + ".py";
-        return;
-    } else{
+    if (currentFile.isEmpty() || ui->plainTextEdit->document()->isModified()) {
         fileName = "temp.py";
+    } else {
+        fileName = currentFile;
     }
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -209,6 +216,7 @@ void MainWindow::onRunScript() {
 
     file.close();
     runnerOutput->clear();
+
     process.start("python3", QStringList() << fileName);
 
     if (!process.waitForStarted()) {
@@ -220,15 +228,12 @@ void MainWindow::onRunScript() {
         if (process.state() == QProcess::Running) {
             process.kill();
             process.waitForFinished(1000);
-            runnerOutput->setPlainText(runnerOutput->toPlainText() + "Превышено время выполнения (3 сек). Процесс остановлен.\n");
+            runnerOutput->appendPlainText("Превышено время выполнения (3 сек). Процесс остановлен.\n");
         }
-
+        if (fileName == "temp.py" && QFile::exists(fileName)) {
+            QFile::remove(fileName);
+        }
     });
-
-
-    if(process.state() != QProcess::Running) {
-        QFile::remove(fileName);
-    }
 }
 
 void MainWindow::onStopScript() {
