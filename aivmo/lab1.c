@@ -8,9 +8,17 @@ double variant[5][6] = {
     {6, -1, 11, 4, 11, -55},
     {13, -9, -4, 3, 10, -49},
     {-9, 4, 14, 15, 13, -213},
-    {9, 6, 8, 4, -7, 152}
+    {8, 2, -8, -10, -3, -142,}
     };
 
+
+    // double variant[5][6] = {
+    // {8, 2, -8, -10, -3, 142,}, 
+    // {6, -1, 11, 4, 11, -55},
+    // {13, -9, -4, 3, 10, -49},
+    // {-9, 4, 14, 15, 13, -213},
+    // {9, 6, 8, 4, -7, 152}
+    // };
     double test[5][6] = {
     {1, -7, 4, -3, -3, -12}, 
     {-1, -5, 7, -1, 4, 30},
@@ -118,7 +126,7 @@ void compile_answer (double *matrix, int rows, int cols) {
                 printf("x[%d] = %.2f ", basis_index + 1, matrix[i * cols + (cols - 1)]);
                 for (int j = basis_index + 1; j < cols - 1; j++) {
                     if (matrix[i * cols + j] != 0) {
-                        printf("+ %.2f * x[%d]", matrix[i * cols + j], j + 1);
+                        printf("- %.2f * x[%d]", matrix[i * cols + j], j + 1);
                     }
                 }
                 printf("\n");

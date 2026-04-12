@@ -80,6 +80,14 @@ int main () {
         x[i] = (int *)malloc(cols * sizeof(int));
     }
 
+    for(int i = 0; i < rows; i++)
+    {
+        for(int j = 0; j < cols; j++)
+        {
+            x[i][j] = -1;
+        }
+    }
+
     fclose(file);
     printf("Исходные данные, приведенные к закрытой модели: \n");
     //printf("a %d b %d\nA: ", rows, cols);
@@ -95,7 +103,7 @@ int main () {
     printf("C:\n   ");
     for (int i = 0; i < rows; i++){
         for (int j = 0; j < cols; j++) {
-            printf("%d ", c[i][j]);
+            printf("%2d ", c[i][j]);
         }
         printf("\n   ");
     }
@@ -110,17 +118,31 @@ int main () {
             if (a[i] >= b[j]) {
                 x[i][j] = b[j];
                 a[i] -= b[j];
+                if(a[i] == 0 && i != rows - 1) {
+                    // for(int col = 0; col < j; col++)
+                    // {
+                    //     x[i][col] = -1;
+                    // }
+                    // for (int col = j + 1; col < cols; col++)
+                    // {
+                    //     x[i][col] = -1;
+                    // }
+                    x[i + 1][j] = 0;
+                }
                 b[j] = 0;
             } else {
                 x[i][j] = a[i];
                 b[j] -= a[i];
+                if(b[j] == 0 && j != cols - 1) {
+                    x[i][j + 1] = 0;
+                }
                 a[i] = 0;
             }
             iter++;
             printf("Шаг %d: \n", iter);
             for (int i = 0; i < rows; i++){
                 for (int j = 0; j < cols; j++) {
-                    printf("%d ", x[i][j]);
+                     printf("%2d ", x[i][j]);
                 }
                 printf("\n");
             }
@@ -132,7 +154,7 @@ int main () {
     printf("\nОпорный план транспортной задачи:\n\n");
     for (int i = 0; i < rows; i++){
         for (int j = 0; j < cols; j++) {
-            printf("%d ", x[i][j]);
+            printf("%2d ", x[i][j]);
         }
         printf("\n");
         
